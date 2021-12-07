@@ -3,7 +3,9 @@ using EducationalMaterialsAPI.Data.DTOs.AuthorDtos;
 using EducationalMaterialsAPI.Data.DTOs.EduMaterialDtos;
 using EducationalMaterialsAPI.Data.DTOs.EduMaterialTypeDtos;
 using EducationalMaterialsAPI.Data.DTOs.ReviewDtos;
+using EducationalMaterialsAPI.Data.DTOs.UserDtos;
 using EducationalMaterialsAPI.Model.Entities;
+using EducationalMaterialsAPI.Model.User;
 
 namespace EducationalMaterialsAPI.Data.Profiles
 {
@@ -37,6 +39,11 @@ namespace EducationalMaterialsAPI.Data.Profiles
             CreateMap<ReviewCreateDto, Review>();
             CreateMap<ReviewUpdateDto, Review>();
             CreateMap<Review, ReviewUpdateDto>();
+            #endregion
+
+            #region Users maps
+            CreateMap<User, UserReadDto>();
+            CreateMap<UserCreateDto, User>();
             #endregion
         }
     }

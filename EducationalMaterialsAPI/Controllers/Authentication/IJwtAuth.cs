@@ -1,7 +1,9 @@
-﻿namespace EducationalMaterialsAPI.Controllers.Authentication
+﻿using EducationalMaterialsAPI.Data.Repository.Users;
+
+namespace EducationalMaterialsAPI.Controllers.Authentication
 {
     public interface IJwtAuth
     {
-        string Authentication(string username, string password);
+        public Task<string> Authentication(string username, string password, IUsersRepo usersRepo);
     }
 }

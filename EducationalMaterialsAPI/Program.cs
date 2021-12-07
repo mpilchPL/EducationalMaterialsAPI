@@ -8,12 +8,15 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 using EducationalMaterialsAPI.Data.Filters.ErrorFilter;
+using EducationalMaterialsAPI.Data.Repository.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<EduMaterialsContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EduMaterialsDbConnection")));
+builder.Services.AddDbContext<UsersDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDbConnnection")));
 
 #region JWT Auth
 
@@ -39,6 +42,7 @@ builder.Services.AddSingleton<IJwtAuth>(new JwtAuth(builder.Configuration["Jwt:K
 #endregion
 
 builder.Services.AddScoped(typeof(IRepo<>), typeof(Repo<>));
+builder.Services.AddScoped(typeof(IUsersRepo), typeof(UsersRepo));
 builder.Services.AddControllers()
     .AddNewtonsoftJson(s => s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
