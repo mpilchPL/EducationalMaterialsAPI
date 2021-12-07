@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+using EducationalMaterialsAPI.Data.ErrorFilter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,12 @@ builder.Services.AddSwaggerGen(config =>
         Version = "v1"
     });
 });
+
+builder.Services.AddMvc(options =>
+{
+    options.Filters.Add(new ErrorHandlingFilter());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
