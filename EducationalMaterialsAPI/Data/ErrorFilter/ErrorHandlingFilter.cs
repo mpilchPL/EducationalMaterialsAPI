@@ -9,7 +9,7 @@ namespace EducationalMaterialsAPI.Data.ErrorFilter
         {
             var exception = context.Exception;
             ILogger logger = LoggerFactory.Create(x => x.AddConsole()).CreateLogger("ErrorHandlingFilter");
-            logger.LogCritical("\n" +
+            logger.LogCritical(exception, "\n" +
                 $"Exception message: {exception.Message} \n" +
                 $"Stack trace:\n {exception.StackTrace}");
 

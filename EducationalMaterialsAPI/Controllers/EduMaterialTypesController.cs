@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EducationalMaterialsAPI.Data.DTOs.EduMaterialTypeDtos;
 using EducationalMaterialsAPI.Data.Repository;
+using EducationalMaterialsAPI.Logger.Extensions;
 using EducationalMaterialsAPI.Model.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET materials/types
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<ICollection<EduMaterialTypeReadDto>>> GetAllTypes()
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetAllTypes));
             var typesModels = await _typesRepo.GetAll();
             if (typesModels == null || typesModels.Count < 1)
             {
@@ -39,9 +40,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET materials/types/{id}
         [HttpGet("{id}", Name = "GetMaterialType")]
-        [AllowAnonymous]
         public async Task<ActionResult<EduMaterialTypeReadDto>> GetMaterialType(int id)
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetMaterialType));
             var typeModel = await _typesRepo.Get(id);
             if (typeModel == null)
             {
@@ -53,8 +54,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // POST materials/types
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<EduMaterialTypeReadDto>> CreateEduMaterialType(EduMaterialTypeCreateDto eduMaterialTypeCreateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(CreateEduMaterialType));
             var typeModel = _mapper.Map<EduMaterialType>(eduMaterialTypeCreateDto);
             await _typesRepo.Add(typeModel);
             var typeReadDto = _mapper.Map<EduMaterialTypeReadDto>(typeModel);
@@ -63,8 +66,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // PUT materials/types/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateEduMaterialType(int id, EduMaterialTypeUpdateDto eduMaterialTypeUpdateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(UpdateEduMaterialType));
             var typeModel = await _typesRepo.Get(id);
             if (typeModel == null)
             {
@@ -77,8 +82,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // DELETE materials/types/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteEduMaterialType(int id)
         {
+            _logger.LogInfo(HttpContext.User, nameof(DeleteEduMaterialType));
             var typeModel = await _typesRepo.Get(id);
             if (typeModel == null)
             {

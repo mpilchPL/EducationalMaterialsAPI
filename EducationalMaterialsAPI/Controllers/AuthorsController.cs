@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EducationalMaterialsAPI.Data.DTOs.AuthorDtos;
 using EducationalMaterialsAPI.Data.Repository;
+using EducationalMaterialsAPI.Logger.Extensions;
 using EducationalMaterialsAPI.Model.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -27,9 +28,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET authors
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<ICollection<AuthorReadDto>>> GetAllAuthors()
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetAllAuthors));
             var authorModels = await _authorsRepo.GetAll();
             if (authorModels == null)
             {
@@ -41,9 +42,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET authors/{id}
         [HttpGet("{id}", Name = "GetAuthor")]
-        [AllowAnonymous]
         public async Task<ActionResult<AuthorReadDto>> GetAuthor(int id)
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetAuthor));
             var authorModel = await _authorsRepo.Get(id);
             if (authorModel == null)
             {
@@ -55,8 +56,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // POST authors
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<AuthorReadDto>> CreateAuthor(AuthorCreateDto authorCreateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(CreateAuthor));
             var authorModel = _mapper.Map<Author>(authorCreateDto);
             await _authorsRepo.Add(authorModel);
             var authorReadDto = _mapper.Map<AuthorReadDto>(authorModel);
@@ -65,8 +68,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // PUT authors/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateAuthor(int id, AuthorUpdateDto authorUpdateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(UpdateAuthor));
             var authorModel = await _authorsRepo.Get(id);
             if (authorModel == null)
             {
@@ -79,8 +84,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // PATCH authors/{id}
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> PatchAuthor(int id, JsonPatchDocument<AuthorUpdateDto> patchAuthor)
         {
+            _logger.LogInfo(HttpContext.User, nameof(PatchAuthor));
             var authorModel = await _authorsRepo.Get(id);
             if (authorModel == null)
             {
@@ -101,8 +108,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // DELETE authors/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteAuthor(int id)
         {
+            _logger.LogInfo(HttpContext.User, nameof(DeleteAuthor));
             var authorModel = await _authorsRepo.Get(id);
             if (authorModel == null)
             {

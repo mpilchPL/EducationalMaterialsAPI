@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EducationalMaterialsAPI.Data.DTOs.EduMaterialDtos;
 using EducationalMaterialsAPI.Data.Repository;
+using EducationalMaterialsAPI.Logger.Extensions;
 using EducationalMaterialsAPI.Model.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +27,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET materials
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<ICollection<EduMaterialReadDto>>> GetAllMaterials()
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetAllMaterials));
             var materialsModels = await _materialsRepo.GetAll();
             if(materialsModels == null || materialsModels.Count < 1)
             {
@@ -41,9 +42,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET materials/{id}
         [HttpGet("{id}", Name = "GetMaterial")]
-        [AllowAnonymous]
         public async Task<ActionResult<EduMaterialReadDto>> GetMaterial(int id)
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetMaterial));
             var materialModel = await _materialsRepo.Get(id);
             if(materialModel == null)
             {
@@ -55,8 +56,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // POST materials
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<EduMaterialReadDto>> CreateEduMaterial(EduMaterialCreateDto eduMaterialCreateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(CreateEduMaterial));
             var materialModel = _mapper.Map<EduMaterial>(eduMaterialCreateDto);
             await _materialsRepo.Add(materialModel);
             var materialReadDto = _mapper.Map<EduMaterialReadDto>(materialModel);
@@ -65,8 +68,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // PUT materials/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateEduMaterial(int id, EduMaterialUpdateDto eduMaterialUpdateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(UpdateEduMaterial));
             var materialModel = await _materialsRepo.Get(id);
             if (materialModel == null)
             {
@@ -79,8 +84,10 @@ namespace EducationalMaterialsAPI.Controllers
 
         // DELETE materials/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteEduMaterial(int id)
         {
+            _logger.LogInfo(HttpContext.User, nameof(DeleteEduMaterial));
             var materialModel =  await _materialsRepo.Get(id);
             if (materialModel == null)
             {

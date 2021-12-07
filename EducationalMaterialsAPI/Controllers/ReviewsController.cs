@@ -4,6 +4,7 @@ using EducationalMaterialsAPI.Data.Repository;
 using EducationalMaterialsAPI.Model.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using EducationalMaterialsAPI.Logger.Extensions;
 
 namespace EducationalMaterialsAPI.Controllers
 {
@@ -24,9 +25,9 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET materials/{materialId}/reviews
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<ICollection<ReviewReadDto>>> GetAllReviewsOfMaterial(int materialId)
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetAllReviewsOfMaterial));
             var reviewModels = await _reviewRepo.GetAll(x => x.EduMaterialId == materialId);
             if (reviewModels == null || reviewModels.Count < 1)
             {
@@ -36,12 +37,11 @@ namespace EducationalMaterialsAPI.Controllers
             return Ok(revireReadDto);
         }
 
-
         // GET materials/{materialId}/reviews/{reviewId}
         [HttpGet("{reviewId}", Name = "GetReview")]
-        [AllowAnonymous]
         public async Task<ActionResult<ReviewReadDto>> GetReview(int materialId, int reviewId)
         {
+            _logger.LogInfo(HttpContext.User, nameof(GetReview));
             var reviewModel = await _reviewRepo.Get(reviewId);
             if (reviewModel == null)
             {
@@ -55,6 +55,7 @@ namespace EducationalMaterialsAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ReviewReadDto>> CreateReview(int materialId, ReviewCreateDto reviewCreateDto)
         {
+            _logger.LogInfo(HttpContext.User, nameof(CreateReview));
             var reviewModel = _mapper.Map<Review>(reviewCreateDto);
             await _reviewRepo.Add(reviewModel);
             var reviewReadDto = _mapper.Map<ReviewReadDto>(reviewModel);
@@ -65,21 +66,31 @@ namespace EducationalMaterialsAPI.Controllers
         [HttpPut("{reviewId}")]
         public async Task<ActionResult> UpdateReview(int materialId, int reviewId, ReviewUpdateDto reviewUpdateDto)
         {
-            throw new NotImplementedException();
-        }
-
-        // materials/{materialId}/reviews/{id}
-        [HttpDelete("{reviewId}")]
-        public async Task<ActionResult> DeleteEduMaterial(int materialId, int reviewId)
-        {
+            _logger.LogInfo(HttpContext.User, nameof(UpdateReview));
             var reviewModel = await _reviewRepo.Get(reviewId);
             if (reviewModel == null)
             {
                 return NotFound();
             }
+            _mapper.Map(reviewUpdateDto, reviewModel);
+            await _reviewRepo.Update(reviewModel);
+            return NoContent();
+        }
 
+        // materials/{materialId}/reviews/{id}
+        [HttpDelete("{reviewId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> DeleteReview(int materialId, int reviewId)
+        {
+            _logger.LogInfo(HttpContext.User, nameof(DeleteReview));
+            var reviewModel = await _reviewRepo.Get(reviewId);
+            if (reviewModel == null)
+            {
+                return NotFound();
+            }
             await _reviewRepo.Delete(reviewModel);
             return NoContent();
         }
+
     }
 }

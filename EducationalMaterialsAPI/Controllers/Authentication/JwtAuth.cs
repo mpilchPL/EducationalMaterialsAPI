@@ -7,8 +7,8 @@ namespace EducationalMaterialsAPI.Controllers.Authentication
 {
     public class JwtAuth : IJwtAuth
     {
-        private readonly string _username = "admin";
-        private readonly string _password = "admin";
+        private readonly string[] _usernames = { "admin", "zenek", "gienek" };
+        private readonly string _password = "123";
         private readonly string key;
         private readonly int _expiresIn = 24; // hrs
         public JwtAuth(string key)
@@ -17,7 +17,7 @@ namespace EducationalMaterialsAPI.Controllers.Authentication
         }
         public string Authentication(string username, string password)
         {
-            if (!(username.Equals(_username) || password.Equals(_password)))
+            if (!_usernames.Contains(username) || !password.Equals(_password))
             {
                 return null;
             }
@@ -34,7 +34,8 @@ namespace EducationalMaterialsAPI.Controllers.Authentication
                 Subject = new ClaimsIdentity(
                     new Claim[]
                     {
-                        new Claim(ClaimTypes.Name, username)
+                        new Claim(ClaimTypes.Name, username),
+                        new Claim(ClaimTypes.Role, username == "admin" ? "Admin" : "User")
                     }),
                 Expires = DateTime.UtcNow.AddHours(_expiresIn),
                 SigningCredentials = new SigningCredentials(

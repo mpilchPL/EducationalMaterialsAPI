@@ -1,4 +1,5 @@
 ﻿using EducationalMaterialsAPI.Controllers.Authentication;
+using EducationalMaterialsAPI.Logger.Extensions;
 using EducationalMaterialsAPI.Model.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace EducationalMaterialsAPI.Controllers
         [HttpPost("login")]
         public IActionResult Authentication([FromBody] UserCredential userCredential)
         {
+            _logger.LogInfo(null, nameof(Authentication));
             var token = _jwtAuth.Authentication(userCredential.UserName, userCredential.Password);
             if (token == null)
                 return Unauthorized();
