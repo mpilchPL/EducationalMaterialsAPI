@@ -1,5 +1,8 @@
 using EducationalMaterialsAPI.Controllers.Authentication;
+using EducationalMaterialsAPI.Data.DAL;
+using EducationalMaterialsAPI.Data.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -7,6 +10,9 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<EduMaterialsContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EduMaterialsDbConnection")));
+
 #region JWT Auth
 
 builder.Services.AddAuthentication(x =>
@@ -30,8 +36,9 @@ builder.Services.AddSingleton<IJwtAuth>(new JwtAuth(builder.Configuration["Jwt:K
 
 #endregion
 
+builder.Services.AddScoped(typeof(IRepo<>), typeof(Repo<>));
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
 {
