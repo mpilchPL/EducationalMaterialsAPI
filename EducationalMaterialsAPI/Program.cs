@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Newtonsoft.Json.Serialization;
-using EducationalMaterialsAPI.Data.ErrorFilter;
+using EducationalMaterialsAPI.Data.Filters.ErrorFilter;
 
 var builder = WebApplication.CreateBuilder(args);
 

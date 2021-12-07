@@ -3,8 +3,10 @@ using EducationalMaterialsAPI.Data.DTOs.EduMaterialDtos;
 using EducationalMaterialsAPI.Data.Repository;
 using EducationalMaterialsAPI.Logger.Extensions;
 using EducationalMaterialsAPI.Model.Entities;
+using EducationalMaterialsAPI.Data.Filters.MaterialsFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace EducationalMaterialsAPI.Controllers
 {
@@ -27,15 +29,23 @@ namespace EducationalMaterialsAPI.Controllers
 
         // GET materials
         [HttpGet]
-        public async Task<ActionResult<ICollection<EduMaterialReadDto>>> GetAllMaterials()
+        public async Task<ActionResult<ICollection<EduMaterialReadDto>>> GetAllMaterials([FromBody] OutputParams outputParams)
         {
-            _logger.LogInfo(HttpContext.User, nameof(GetAllMaterials));
-            var materialsModels = await _materialsRepo.GetAll();
-            if(materialsModels == null || materialsModels.Count < 1)
+            var filtered = outputParams.FilterByType > 0;
+            var sorted = outputParams.SortByDate;
+            
+            var materialsModels = filtered ? 
+                await _materialsRepo.GetAll(x => x.EduMaterialTypeId == outputParams.FilterByType) :
+                await _materialsRepo.GetAll();
+            if (materialsModels == null || materialsModels.Count < 1)
             {
                 return NotFound();
             }
-            var materialsReadDto = _mapper.Map<ICollection<EduMaterialReadDto>>(materialsModels);
+            var materialsModelsSorted = sorted ? 
+                materialsModels.OrderBy(x => x.PublishDate) :
+                materialsModels.OrderBy(x => x.Id);
+
+            var materialsReadDto = _mapper.Map<ICollection<EduMaterialReadDto>>(materialsModelsSorted);
             return Ok(materialsReadDto);
         }
 

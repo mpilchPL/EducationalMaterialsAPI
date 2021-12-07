@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace EducationalMaterialsAPI.Data.ErrorFilter
+namespace EducationalMaterialsAPI.Data.Filters.ErrorFilter
 {
     public class ErrorHandlingFilter : ExceptionFilterAttribute
     {
